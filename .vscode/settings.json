@@ -2,5 +2,7 @@
     "git.ignoreLimitWarning": true,
     "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
     "jupyter.kernels.filter": [],
-    "notebook.defaultFormatter": "ms-python.python"
+    "notebook.defaultFormatter": "ms-python.python",
+    "notebook.kernelProvider": "jupyter",
+    "jupyter.kernels.excludePythonEnvironments": false
 }
