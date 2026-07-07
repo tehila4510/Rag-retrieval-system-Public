@@ -10,6 +10,9 @@ pypdf>=4.0.0
 # Load API keys from a local .env file
 python-dotenv>=1.0.0
 
+# Windows/NetFree SSL: use system certificate store for HTTPS API calls
+pip-system-certs>=4.0.0
+
 # Numeric helpers (cosine similarity checks, etc.)
 numpy>=1.26.0
 
