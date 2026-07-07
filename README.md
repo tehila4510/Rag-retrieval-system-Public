@@ -60,6 +60,30 @@ Copy-Item .env.example .env
 
 4. פתיחת הנוטבוק `notebooks/rag_semantic_search.ipynb` והרצת התאים לפי הסדר.
 
+## פתרון בעיות נפוצות
+
+### Push נחסם ב-GitHub (Push Protection)
+אם GitHub כותב `Push cannot contain secrets`, כנראה שהכנסת מפתח API אמיתי ל-`.env.example` ועשית commit.
+- **אסור** לשים מפתחות אמיתיים ב-`.env.example` – רק placeholders.
+- מפתחות אמיתיים שייכים **רק** לקובץ `.env` (שמוגדר ב-gitignore).
+- אם המפתח דלף ל-git – **בטלי/צרי מפתח חדש** ב-AI Studio / Pinecone.
+
+### הנוטבוק לא רץ / לא מוצא את המסמך
+1. בחרי kernel: **Python (RAG-system)** או interpreter: `.venv\Scripts\python.exe`
+2. ודאי שקיים קובץ `.env` (לא רק `.env.example`):
+   ```powershell
+   Copy-Item .env.example .env
+   ```
+3. מלאי את המפתחות ב-`.env` בלבד.
+4. הריצי את התאים **לפי הסדר** (מההגדרות ועד chunks לפני embeddings).
+
+### שגיאת SSL (נפוץ ב-NetFree)
+אם מופיעה שגיאה כמו `CERTIFICATE_VERIFY_FAILED`:
+```powershell
+pip install pip-system-certs
+```
+ואז **Restart Kernel** ב-VS Code ונסי שוב.
+
 ## טכנולוגיות
 
 | רכיב | טכנולוגיה |
