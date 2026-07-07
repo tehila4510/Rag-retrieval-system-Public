@@ -1,0 +1,18 @@
+# Gemini SDK (the new unified google-genai package) - used for Embeddings
+google-genai>=1.0.0
+
+# Pinecone vector database (new "pinecone" package, replaces old pinecone-client)
+pinecone>=5.0.0
+
+# PDF text extraction
+pypdf>=4.0.0
+
+# Load API keys from a local .env file
+python-dotenv>=1.0.0
+
+# Numeric helpers (cosine similarity checks, etc.)
+numpy>=1.26.0
+
+# Jupyter notebook runtime
+jupyter>=1.0.0
+ipykernel>=6.29.0
