@@ -12,37 +12,39 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 from pinecone import Pinecone, ServerlessSpec
-from pypdf import PdfReader
+import pdfplumber
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 load_dotenv(PROJECT_ROOT / ".env")
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-PDF_PATH = PROJECT_ROOT / "data" / "apartment_buyer_guide.pdf"
+PDF_PATH = PROJECT_ROOT / "data" / "cs229-notes2.pdf"
 CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 150
 EMBED_MODEL = "gemini-embedding-001"
 EMBED_DIM = 768
-INDEX_NAME = "rag-apartment-guide"
+INDEX_NAME = "cs229-notes2"
 
+import re
 
 def clean_text(text):
-    text = re.sub(r"[ \t]+", " ", text)
-    text = re.sub(r"\n\s*\n+", "\n", text)
+    text = re.sub(re.compile(r'\s+'), ' ', text)
     return text.strip()
 
-
 def load_pdf(pdf_path):
-    reader = PdfReader(str(pdf_path))
+    """Read a PDF using pdfplumber for better Hebrew text extraction."""
     full_text = ""
     char_page = []
-    for page_num, page in enumerate(reader.pages, start=1):
-        page_text = clean_text(page.extract_text() or "") + "\n"
-        full_text += page_text
-        char_page.extend([page_num] * len(page_text))
+    
+    with pdfplumber.open(str(pdf_path)) as pdf:
+        for page_num, page in enumerate(pdf.pages, start=1):
+            page_text = page.extract_text() or ""
+            page_text = clean_text(page_text) + "\n"
+            full_text += page_text
+            char_page.extend([page_num] * len(page_text))
+            
     return full_text, char_page
-
 
 def chunk_text(text, char_page, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP):
     step = chunk_size - chunk_overlap
@@ -136,11 +138,10 @@ def main():
 
     print("\n[Step 5] Semantic search (5 questions)...")
     questions = [
-        "מה צריך לבדוק לגבי היתר בנייה לפני רכישת דירה?",
-        "איך מבטיחים את כספי הרוכש לפי חוק המכר?",
-        "מה קורה אם המוכר מאחר במסירת הדירה?",
-        "מה לבדוק בחוזה המכר לפני חתימה?",
-        "מהי תקופת הבדק ומה אחריות המוכר?",
+       "What is the core difference between discriminative and generative learning algorithms?",
+    "How is the multivariate normal distribution parameterized?",
+    "Under what conditions does Gaussian Discriminant Analysis (GDA) provide a better fit than logistic regression?",
+    "What is the fundamental assumption made by the Naive Bayes classifier?",
     ]
 
     for q in questions:
@@ -155,7 +156,8 @@ def main():
             print(f"     {text[:200]}...")
 
     print("\n[Bonus] Comparing chunk configs...")
-    test_q = "מה קורה אם המוכר מאחר במסירת הדירה?"
+    test_q = "Why is Laplace smoothing used in text classification with Naive Bayes?"
+
     configs = {
         "A_default": (1000, 150),
         "B_small": (500, 80),
